@@ -6,5 +6,5 @@ import (
 )
 
 func main(){
-	fmt.Println(os.Args[1:])   //输出结果为slice
+	fmt.Println(os.Args[1:])   //输出结果为一个slice值
 }
