@@ -10,7 +10,7 @@ func main(){
 	counts:=make(map[string]int)
 	input:=bufio.NewScanner(os.Stdin)
 
-	for input.Scan(){   //quit by typing Ctrl+D
+	for input.Scan(){   //quit loop by typing Ctrl+D
 		counts[input.Text()]++
 	}
 	//filter duplicate line and its content
