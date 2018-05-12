@@ -69,9 +69,9 @@ os.Args的第一个元素，os.Args[0]	是命令本身的名字；其它的元�
 		fmt.Println(s)
 	}
 输出结果是：
-	os.Args: [/private/var/folders/g0/857dqf294r3107f870tbqr1m0000gn/T/___go_build_echo1_go Hello Rob Pike]
-	/private/var/folders/g0/857dqf294r3107f870tbqr1m0000gn/T/___go_build_echo1_go
-	Hello Rob Pike
+        os.Args: [/private/var/folders/g0/857dqf294r3107f870tbqr1m0000gn/T/___go_build_echo1_go Hello Rob Pike]
+        /private/var/folders/g0/857dqf294r3107f870tbqr1m0000gn/T/___go_build_echo1_go
+        Hello Rob Pike
 
 程序导入了两个包，用括号把它们括起来写成列表形式，而没有分开写成独立的import声明（**类似的写法还有变量组，常量组**）。两种形式都合法，列表形式习惯上用得多。包导入顺序并不重要；gofmt工具格式化时按照字母顺序对包名排序。
 
@@ -79,22 +79,22 @@ echo程序可以每循环一次输出一个参数，这个版本却是不断地�
 注意：++和--都只能放在变量名后面，因此--i也非法。++i非法。
 
 Go语言只有for循环这一种循环语句。for循环有多种形式，其中一种如下所示：
-for initialization;condition;post{
-	//zero or more statements
-}
+    for initialization;condition;post{
+        //zero or more statements
+    }
 for循环三个部分不需括号包围。大括号强制要求，做大括号必须和post语句在同一行。
 initialization语句是可选的，在循环开始前执行。initialization如果存在，必须是一条简单语句（simple statement），即短变量声明、自增语句、复制语句或函数调用。condition是一个布尔表达式。post语句在循环体执行结束后执行。
 
 for循环的这三部分每个都可以省略，如果省略initialization和post，分号也可以省略：
-//传统的while循环
-for condition{
-	//...
-}
+    //传统的while循环
+    for condition{
+        //...
+    }
 如果连condition也省略了，像下面这样：
-//传统的无限循环
-for{
-	//...
-}
+    //传统的无限循环
+    for{
+        //...
+    }
 这就变成一个无限循环，尽管如此，还可以用其他方式终止循环，如一条break或return语句。无限循环用得还是蛮多的，像go-ethereum的miner模块中著名的方法（self *worker）update就是for和select配合。
 	for {
 	
@@ -135,10 +135,7 @@ for{
 					txs := map[common.Address]types.Transactions{acc: {ev.Tx}}
 	
 					txset := types.NewTransactionsByPriceAndNonce(self.current.signer, txs)
-	
-	
-	
-	
+
 					self.current.commitTransactions(self.mux, txset, self.chain, self.coinbase)
 	
 					self.updateSnapshot()
@@ -157,9 +154,7 @@ for{
 	
 				}
 	
-	
-	
-	
+
 			// System stopped
 	
 			case <-self.txSub.Err():
@@ -199,10 +194,10 @@ for循环的另一种形式，在某种数据类型的区间（range）上遍历
 Go语言中这种情况的解决方法是使用空白标识符（blank identifier），即_(也就是下划线)。空白标识符可用于任何语法需要但程序逻辑不需要的时候，例如，在循环里丢弃不需要的循环索引，保留元素值。大多数的Go程序员都会像上面这样使用range和_写echo程序，因为隐式地而非显式地索引os.Args,容易写对。
 
 声明一个变量有好几种方式，下面这些都等价：
-s:=""
-var s string
-var s = ""
-var s string=""
+    s:=""
+    var s string
+    var s = ""
+    var s string=""
 
 第一种形式是短变量声明，最简洁，但只能用在函数内部，而不能用于包级别变量。第二种形式依赖于字符串的默认初始化零值机制，被初始化为“”。第三种形式用得很少，除非同时声明多个变量。第四种形式显示地标明变量的类型，当变量类型与初始类型相同时，类型冗余，但如果两者类型不同，变量类型就必须了。**实践中一般使用💰两种形式的某个，初始值重要的话就显式地指定变量的类型，否则使用隐式初始化**。
 
@@ -229,30 +224,30 @@ var s string=""
 	对文件做拷贝、打印、搜索、排序、统计或类似事情的程序都有一个差不多的程序结构：一个处理输入的循环，在每个元素上执行计算处理，在处理的同时或最后产生输出。我们会展示一个名为dup的程序的三个版本；灵感来自于Unix的uniq命令，其寻找相邻的重复行。该程序使用的结构和包是个参考范例，可以方便地修改。
 
 dup的第一个版本打印标准输入中多次出现的行，以重复次数开头。该程序将引入if语句，map数据类型以及bufio包。
-//ch1/dup1.go
-package main
+    //ch1/dup1.go
+    package main
 
-import (
-	"bufio"
-	"os"
-	"fmt"
-)
+    import (
+        "bufio"
+        "os"
+        "fmt"
+    )
 
-func main(){
-	counts:=make(map[string]int)
-	input:=bufio.NewScanner(os.Stdin)
+    func main(){
+        counts:=make(map[string]int)
+        input:=bufio.NewScanner(os.Stdin)
 
-	for input.Scan(){   //quit loop by typing Ctrl+D
-		counts[input.Text()]++
-	}
-	//filter duplicate line and its content
-	for line,n := range counts{
-		if n>1{
-			fmt.Printf("The num of dup line is %d and its corresponding content are %s\n",n,line)
-		}
-	}
-	fmt.Println("The result of input:",counts)
-}
+        for input.Scan(){   //quit loop by typing Ctrl+D
+            counts[input.Text()]++
+        }
+        //filter duplicate line and its content
+        for line,n := range counts{
+            if n>1{
+                fmt.Printf("The num of dup line is %d and its corresponding content are %s\n",n,line)
+            }
+        }
+        fmt.Println("The result of input:",counts)
+    }
 
 	如何运行这个程序呢？至少有以下两种方法。
 	第一种是在终端上，先build生成可执行文件，再运行“提示”输入文本，最后使用ctrl+d退出for循环，搞定！
@@ -271,17 +266,17 @@ input从程序的标准输入中读取内容。每次调用input.Scan(),即读�
 fmt.Printf函数对一些表达式产生格式化输出。该函数的首个参数是格式字符串，指定**后续参数**被如何格式化。各个参数的格式取决于“转换字符”（conversion character），形式为百分号后跟一个字母。例如，%d表示以十进制形式打印一个整型操作数，而%s则表示把字符串型操作数的值展开。
 
 Printf有一大堆这种特性，GO程序员称之为动词（verb）。下面是一些常用的特性：
-%d				十进制整数
-%x,%0,%b		十六进制，八进制，二进制整数
-%f,%g,%e		浮点数:3.141593  3.14159265  3.141593e+00
-%t				布尔:true或false
-%c				字符(rune)(Unicode码点)
-%s				字符串
-%q				带双引号的字符串“abc”或带单引号的字符'c'
-%v				变量的自然形式（natural format）
-%T				变量的类型
-%%				字面上的百分号标志（无操作数）
-%p				变量的地址
+    %d				十进制整数
+    %x,%0,%b		十六进制，八进制，二进制整数
+    %f,%g,%e		浮点数:3.141593  3.14159265  3.141593e+00
+    %t				布尔:true或false
+    %c				字符(rune)(Unicode码点)
+    %s				字符串
+    %q				带双引号的字符串“abc”或带单引号的字符'c'
+    %v				变量的自然形式（natural format）
+    %T				变量的类型
+    %%				字面上的百分号标志（无操作数）
+    %p				变量的地址
 
 dup1的格式字符串中还含有制表符\t和换行符\n。字符串字面上可能含有这些代表不可见字符的转义字符（escape sequences）。按照惯例，以字母f结尾的格式化函数，如log.Printf和fmt.Printf,都采用fmt.Printf的格式化准则。而以ln结尾的格式化函数，则遵循Println的方式，以跟%v差不多的方式格式化参数，并在最后添加一个换行符。 其中后缀f指format，ln指line。
 
@@ -333,34 +328,34 @@ dup1的格式字符串中还含有制表符\t和换行符\n。字符串字面上
 	/ch1/dup3.go
 	package main
 
-import (
-	"os"
-	"io/ioutil"
-	"fmt"
-	"strings"
-)
+    import (
+        "os"
+        "io/ioutil"
+        "fmt"
+        "strings"
+    )
 
-func main(){
-	counts:=make(map[string]int)
-	for _,filename:=range os.Args[1:]{
-		//returned an byte[]
-		data,err:=ioutil.ReadFile(filename)
-		if err!=nil{
-			fmt.Fprintf(os.Stderr,"dup3:%v\n",err)
-			continue
-		}
-		//conversion byte[] to string
-		for _,line:=range strings.Split(string(data),"\n"){
-			counts[line]++
-		}
-	}
+    func main(){
+        counts:=make(map[string]int)
+        for _,filename:=range os.Args[1:]{
+            //returned an byte[]
+            data,err:=ioutil.ReadFile(filename)
+            if err!=nil{
+                fmt.Fprintf(os.Stderr,"dup3:%v\n",err)
+                continue
+            }
+            //conversion byte[] to string
+            for _,line:=range strings.Split(string(data),"\n"){
+                counts[line]++
+            }
+        }
 
-	for line,n :=range counts{
-		if n>1{
-			fmt.Printf("%d\t%s\n",n,line)
-		}
-	}
-}
+        for line,n :=range counts{
+            if n>1{
+                fmt.Printf("%d\t%s\n",n,line)
+            }
+        }
+    }
 
 ReadFile函数返回一个字节切片（byte slice），必须把它转换成string，才能用strings.Split分割。
 
@@ -370,47 +365,47 @@ ReadFile函数返回一个字节切片（byte slice），必须把它转换成st
 练习1.3和1.4都比较有实际意义。
 
 
-package main
+    package main
 
-import (
-	"os"
-	"fmt"
-	"time"
-	"net/http"
-	"io/ioutil"
-	"io"
-)
+    import (
+        "os"
+        "fmt"
+        "time"
+        "net/http"
+        "io/ioutil"
+        "io"
+    )
 
-func main(){
-	start:=time.Now()
-	ch:=make(chan string)
-	for _,url :=range os.Args[1:] {
-		go fetch(url, ch)
-	}
-	for range os.Args[1:] {
-		fmt.Println(<-ch)
-	}
-	fmt.Printf("%.2fs elapsed\n",time.Since(start).Seconds())
+    func main(){
+        start:=time.Now()
+        ch:=make(chan string)
+        for _,url :=range os.Args[1:] {
+            go fetch(url, ch)
+        }
+        for range os.Args[1:] {
+            fmt.Println(<-ch)
+        }
+        fmt.Printf("%.2fs elapsed\n",time.Since(start).Seconds())
 
-}
+    }
+    
+    func fetch(url string,ch chan<-string){
+        start:=time.Now()
+        resp,err:=http.Get(url)
+        if err!=nil{
+            ch<-fmt.Sprint(err)
+            return
+        }
+        nBytes,err:=io.Copy(ioutil.Discard,resp.Body)
+        resp.Body.Close()
+        if err!=nil{
+            ch <-fmt.Sprintf("while reading %s:%v",url,err)
+            return
+        }
+        secs:=time.Since(start).Seconds()
+        ch<-fmt.Sprintf("%.2fs	%7d%s",secs,nBytes,url)
 
-func fetch(url string,ch chan<-string){
-	start:=time.Now()
-	resp,err:=http.Get(url)
-	if err!=nil{
-		ch<-fmt.Sprint(err)
-		return
-	}
-	nBytes,err:=io.Copy(ioutil.Discard,resp.Body)
-	resp.Body.Close()
-	if err!=nil{
-		ch <-fmt.Sprintf("while reading %s:%v",url,err)
-		return
-	}
-	secs:=time.Since(start).Seconds()
-	ch<-fmt.Sprintf("%.2fs	%7d%s",secs,nBytes,url)
-
-}
+    }
 
 io.Copy会把响应的Body内容拷贝到ioutil.Discard输出流中（译注：可以把这个变量看作一个垃圾桶，可以向里面写一些不需要的数据），因为我们需要这个方法返回的字节数，但是又不想要其内容。每当请求返回内容时，fetch函数都会往ch这个channel里写入一个字符串，由main函数里的第二个for循环来处理并打印channel里的这个字符串。
 
