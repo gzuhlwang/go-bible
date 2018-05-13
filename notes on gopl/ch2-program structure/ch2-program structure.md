@@ -126,7 +126,7 @@ s=100         //赋值（先声明，后赋值）
     //...
     out,err:=os.Create(outfile)   //只声明了一个out变量，然后对已经声明的err进行了赋值操作
 
-短变量声明语句中至少要声明一个新的变量，
+短变量声明语句中**至少**要声明**一个新的变量**。
     f,err:=os.File(infile)
     //...
     f,err:=os.File(outfile)    //compile error：no new variables
