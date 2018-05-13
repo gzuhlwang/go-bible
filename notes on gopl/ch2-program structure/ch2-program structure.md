@@ -4,21 +4,24 @@
 Go语言中的函数名、变量名、常量名、类型名、包名、语句标号等所有的命名，都遵循一个简单的命名规则：一个名字必须以一个字母（Unicode字母）或下划线开头，后面可以跟任意数量的字母、数字或下划线。Go语言中变量名大小写敏感，例如heapSort和Heapsort是两个不同的名字。
 
 Go的关键字比较少，只有25个，比26个字母还少一个。它们是
-流程控制： for switch break continue goto default fallthrough if else case 			 range
-复合类型： map chan func interface struct
-基础类型： int
-并发功能： go	select
-其他： import type var return	const defer
+    流程控制： for switch break continue goto default fallthrough if else case 			 range
+    复合类型： map chan func interface struct
+    基础类型： int
+    并发功能： go	select
+    其他： import type var return	const defer
 
 此外，还有大约30多个预定义的名字，比如int和true等，主要对应内建的常量、类型和函数。
-内建常量：true false iota nil
-内建类型： int int8 int16 int32 int64
-			 uint uint8 uint16 uint32 uint64 uintptr
-			 float32 float64 complex128 complex64
-			 bool	byte rune string error
-内建函数：make len cap new append copy close delete
-        complex real imag
-        panic recover
+    内建常量：true false iota nil
+    内建类型： int int8 int16 int32 int64
+                 uint uint8 uint16 uint32 uint64 uintptr
+                 float32 float64 complex128 complex64
+                 bool	byte rune string error
+
+数据类型的作用：告诉编译器这个数（变量应该分配多大的内存。
+
+    内建函数：make len cap new append copy close delete
+            complex real imag
+            panic recover
         
 名字的首字母的大小写决定了名字在包外的可见性。如果一个名字是大写字母开头的（**必须是在函数外部定义的包级别名字；包级别函数名也是包级别名字**），那么它是可导出的（exported），也就是说可以被外部的包访问，例如fmt包的Println函数就是可导出的。包本身的名字一般总是用小写字母。
 
@@ -27,17 +30,154 @@ Go语言的风格是尽量使用短小的名字，对于局部变量尤其如此
 在习惯上，GO语言程序员推荐使用驼峰式命名。你会在标准库中看到QuoteRuneToASCII和parseRequestLine这样的函数命名。但一般不会用quote_rune_to_ASCII和parse_request_line这样的命名。而像ACSII和HTML这样的缩略词则避免使用大小写混合的写法，它们可能被称为htmlEscape、HTMLEscape，但不会是escapeHtml。
 
 ##声明（declarations）
+
 声明语句定义了程序的各种实体对象以及部分或全部的属性（常见于结构体）。Go语言主要有四种类型的声明语句：var、const、type和func，分别对应变量、常量、类型和函数实体对象的声明。
 
-一个GO语言编写的程序对应一个或多个以.go为文件后缀名的源文件中。每个源文件以包的声明语句开始，说明该源文件是属于哪个包。包声明语句之后是import语句导入依赖的其他包，然后是包一级的类型、变量、常量、函数的声明语句，包一级的各种类型的声明语句的顺序无关紧要。
+一个Go语言编写的程序对应一个或多个以.go为文件后缀名的源文件中。每个源文件以包的声明语句开始，说明该源文件是属于哪个包。包声明语句之后是import语句导入依赖的其他包，然后是包一级的类型、变量、常量、函数的声明语句，包一级的各种类型的声明语句的顺序无关紧要。
 
-pakcage 
+package
+
 import
-type struct
+
+type
+
+struct
+
 const
+
 func
 
 一个函数的声明由一个函数名字、参数列表（由函数的调用者提供参数变量的具体值）、一个可选的返回值列表和包含函数定义的函数体组成。执行函数从函数的第一个语句开始，依次顺序执行**直到遇到return返回语句**，如果没有返回语句则是执行到函数末尾，然后返回到函数调用者。
+
+##变量（variable）
+
+变量：程序运行期间，可以改变的量。
+
+###变量声明
+1、声明一组变量
+
+var i,j,k int   //int,int,int
+
+2、用一组初始化表达式声明并初始化一组变量
+
+var b,f,s=true,2.3,"four"   //bool,float64,string
+
+初始化表达式可以是字面量或任意的表达式。
+
+3、一组变量也可以通过调用一个函数，由函数返回的多个返回值初始化
+
+var f,err:=os.Open(name)
+
+###变量初始化
+###变量赋值
+变量初始化（声明变量，同时赋值【一步到位】）
+
+var s int=10  //变量初始化
+
+s=100         //赋值（先声明，后赋值）
+
+    package main
+    import "fmt"
+    func main(){
+        a=100       //报错  这事赋值，赋值前，必须要声明变量
+        fmt.Printf("a=%d",a)
+    }
+
+##短变量声明（short variable declarations）
+
+在函数内部，有一种称为短变量声明语句的形式可用于声明和初始化局部变量。
+格式：变量名:=表达式
+
+变量的类型根据表达式来自动推导。
+
+短变量声明 vs var形式声明
+1、短变量简洁、灵活的特点常被用于大部分的局部变量的声明和初始化。
+2、var形式的声明语句往往是用于需要显式指定变量类型的地方，或者因为变量稍后会被重新赋值而初始值无关紧要的地方。
+
+    var err error
+    i:=100
+
+3、两者都可用于声明和初始化一组变量
+
+    i,j:=0,1
+
+但是这种同时声明多个变量的方式应该限制只在可以提高代码可读性的地方使用，比如for循环的初始化语句部分。
+
+注意：":="是一个变量声明语句，而"="是一个变量赋值操作。也不要混淆多个变量的声明和元组（tuple）的多重赋值，后者是将右边各个表达式
+值赋给左边对应的各个变量：
+
+    i,j=j,i   //交换i和j的值
+
+传统的做法需要借助一个辅助变量。
+
+4、短变量声明语句也可以用函数的返回值来声明和初始化变量。
+
+    f,err:=os.File(name)
+    if err!=nil{
+        return err
+    }
+    //... use f ...
+    f.Close()
+
+这里有一个比较微妙的地方：短变量声明左边的变量可能并不是全部都是刚刚声明的。如果有一些已经在相同的词法域（一个{}内？）声明过了，那么短变量
+声明语句对这些已经声明过的变量就只有赋值行为了。
+
+    in,err:=os.Open(infile)     //声明了两个变量
+    //...
+    out,err:=os.Create(outfile)   //只声明了一个out变量，然后对已经声明的err进行了赋值操作
+
+短变量声明语句中至少要声明一个新的变量，
+    f,err:=os.File(infile)
+    //...
+    f,err:=os.File(outfile)    //compile error：no new variables
+
+解决方法是第二个短变量声明语句改用普通的多重赋值语句。
+
+短变量声明语句只有对已经在同级词法域声明过的变量才和赋值操作语句等价，如果变量是在外部词法域声明的，那么短变量声明语句将会在当前词法域
+重新声明一个新的变量。例子见上面。
+
+##指针
+
+一个变量对应一个保存了变量对应类型值的内存空间。普通变量在声明语句创建时被绑定到一个变量名，比如叫x的变量，但是还有很多变量始终以表达式
+方式引入，例如x[i]或x.f变量。所有这些表达式一般都是读取一个变量的值，除非它们是出现在赋值语句的左边，这种时候是给对应变量赋予一个新的值。
+
+一个指针的值是一个变量的地址。指针对应变量在内存中的存储位置。并不是每一个值都会有内存地址，但是对于每一个变量必然有相应的内存地址（这句话如何理解？）。通过指针，
+我们可以直接读或更新对应变量的值，而不需要知道该变量的名字（如果变量有名字的话）。
+
+    var i int
+    fmt.Printf("%p\n",&i)
+    p:=&i
+    fmt.Printf("%v\n",p)  //"<nil>"
+    fmt.Printf("%T\n",p)  //"*int"
+    *p=100                //等价于i=100
+    fmt.Println(i)        //"100"
+
+我们称"p指针指向变量x"，或者说"p指针保存了变量x的内存地址"。*p表达式对应p指针指向的变量的值。一般*p表达式读取指针指向的变量的值，同时因为*p
+对应一个变量，所以该表达式也可以出现在赋值语句的左边，表示更新指针所指向的变量的值。
+
+聚合类型的每个成员——比如结构体的每个字段或者数组的每个元素——也都是对应一个变量，因此也可以被取地址。
+
+变量有时候被称为可寻址的值。即使变量由表达式临时生成，那么表达式也必须能接受&取地址操作。
+
+任何类型的指针的零值都是nil）。如果p!=nil测试为真(p是上面的定义的指针变量)，那么p是指向某个有效值。指针之间也是可以进行相等测试的，只有当它们指向同一个变量或全部是nil时才相等。
+
+    var x,y int
+    fmt.Printf(&x==&x,&y=&x,&x==nil)    //"true false false"
+
+Printf中第一个参数是指向同一个变量x相比，第二个参数是指向不同变量指针的比较，最后一个参数是和nil比较。
+在Go语言中，返回函数中局部变量的地址也是安全的。请看代码：
+    
+    var p=f()
+    
+    func f() *int{
+        v:=1
+        return &v
+    }
+
+
+
+
+
 
 
 
