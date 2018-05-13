@@ -1,2 +1,2 @@
 # go-bible
-some notes,source code on TGPL
+some notes,source code on gopl.
