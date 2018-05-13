@@ -56,25 +56,25 @@ func
 ### 变量声明
 1、声明一组变量
 
-var i,j,k int   //int,int,int
+    var i,j,k int   //int,int,int
 
 2、用一组初始化表达式声明并初始化一组变量
 
-var b,f,s=true,2.3,"four"   //bool,float64,string
+    var b,f,s=true,2.3,"four"   //bool,float64,string
 
 初始化表达式可以是字面量或任意的表达式。
 
 3、一组变量也可以通过调用一个函数，由函数返回的多个返回值初始化
 
-var f,err:=os.Open(name)
+    var f,err:=os.Open(name)
 
 ### 变量初始化
 ### 变量赋值
 变量初始化（声明变量，同时赋值【一步到位】）
 
-var s int=10  //变量初始化
+    var s int=10  //变量初始化
 
-s=100         //赋值（先声明，后赋值）
+    s=100         //赋值（先声明，后赋值）
 
     package main
     import "fmt"
@@ -127,6 +127,7 @@ s=100         //赋值（先声明，后赋值）
     out,err:=os.Create(outfile)   //只声明了一个out变量，然后对已经声明的err进行了赋值操作
 
 短变量声明语句中**至少**要声明**一个新的变量**。
+    
     f,err:=os.File(infile)
     //...
     f,err:=os.File(outfile)    //compile error：no new variables
@@ -219,6 +220,7 @@ Go语言的垃圾回收器所做的工作）。不仅仅是指针会创建别名
     }
 
 每次调用new函数都是返回一个新的变量的地址，因此下面两个地址是不同的：
+    
     p:=new(int)
     q:=new(int)
     fmt.Println(p==q)  //"false"
@@ -246,6 +248,7 @@ new函数相对使用较少，因为对结构体来说，直接用字面量语�
     person.name="bob"   //结构体字段赋值
 
 熟知变量也可以支持++递增和--递减语句（**自增和自减是语句，而不是表达式，因此x=i++之类的表达式是错误的**）：
+    
     v:=1
     v++
     v--
@@ -361,8 +364,25 @@ anyway，只有右边的值对于左边的变量是可赋值的，赋值语句�
 用来格式化Go源文件。
 
 ## 包的初始化
+1、当前go源文件中，每个被import的包，按其在源文件中出现顺序初始化。
+2、包A 引入包B，包B又引入包C，则包的初始化顺序为：C->B->A
+3、main包总是最后一个被初始化
+4、Go语言的构建工具会对.go文件根据字典序排序，然后依次调用编译器编译
+5、当前包的包级变量（常量）根据在文件中出现的先后顺序依次初始化
 
+可以进一步参考《Go语言程序设计》by Mark Summerfield中的5.6.2节。
 
+掌握包的初始化还是蛮重要的。go-ethereum和tendermint的启动流程都是先运行init函数。最后才进入main函数的。
+
+## 作用域
+
+注意区分作用域和变量的生命周期，它们不是一回事。
+
+语法块（todo）
+
+全局语法块（todo）
+
+词法域（todo）
     
 
 
