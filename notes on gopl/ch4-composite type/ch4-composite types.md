@@ -11,8 +11,10 @@
 
 ### 数组的声明
 
-    var a [0]int   //"[]"
+    var a [0]int   //"[]" 空数组
     var b [3]int   //"[0 0 0]"
+    c:=[1]int{}
+    fmt.Println(c) //"[0]"  注意区分a和c
     
 ### 数组的初始化——数组字面值
 
@@ -64,7 +66,7 @@ slice是变长序列。一个slice类型一般写作[]T,其中T代表slice中元
 
 ### 创建和初始化
 
-1、make
+1、使用内置函数make
 
 当使用make创建时，**必须**指定切片的长度。
    
@@ -88,7 +90,7 @@ slice是变长序列。一个slice类型一般写作[]T,其中T代表slice中元
     fmt.Println(slice[3])       //"panic: runtime error: index out of range"
 分别指定长度和容量时，创建的切片，底层数组的长度是指定的容量，**但是初始化后并不能访问所有的数组元素**。上面的例子中我们可以访问3个元素。
 
-2、切片字面量
+2、使用切片字面量语法
 
     slice:=[]string{"block","dag","hashgraph"}
     fmt.Println(len(slice),cap(slice))            //"3 3"
@@ -127,6 +129,16 @@ slice是变长序列。一个slice类型一般写作[]T,其中T代表slice中元
 内置的append函数用于想slice追加元素。
 
 ### copy函数
+todo
+
+### len
+todo
+
+### cap
+map中没有cap操作！
+
+## 比较操作
+todo
 
 ### 迭代切片
 for range
@@ -140,7 +152,7 @@ for range
     }
  
 
-### 在函数将传递切片
+### 在函数间传递切片
 
 切片的尺寸很小，在函数间复制和传递切片成本也很低。
     
@@ -148,3 +160,85 @@ for range
 的数据包含在底层数组里，不属于切片本身，所以将切片复制到任意函数的时候，对底层数组大小都不会有影响。
 在函数间传递24字节的数据会非常快速、简单。这也是切片效率高的地方。不需要传递指针和处理复杂的语法，只需要复制
 切片。
+
+## 总结
+
+slice的用处比数组广泛，需要好好掌握。
+
+## map
+
+### 创建和初始化
+
+1、使用内置的make
+
+    ages:=make(map[string]int)
+    ages1:=map[string]int{}
+    fmt.Println(ages==ages1)
+
+2、使用map字面值语法
+
+    ages:=map[string]int{
+        "alice":13,
+        "bob":14,
+    }
+
+创建映射时更常用的方法是使用map字面值。
+
+## nil和空map
+nil映射也就是没有引用任何哈希表。
+
+    //nil映射
+    var colors map[string]string    //只是声明，零值机制初始化
+    fmt.Println(colors==nil)        //"true"
+    
+    //空映射
+    colors:=map[string]string{}     //注意{}是字面量语法要求的，不是string{}
+    //colors:=map[string]string     //与colors:=map[string]string{}这种写法等价
+    fmt.Println(colors==nil)        //"false"
+
+## 使用map
+
+### delete
+    
+    delete(ages,"bob") 
+    delete(ages,"John")             //删除一个不在map中的元素也是安全的
+
+### 查找
+
+    if age,ok:=ages["bob"];!ok{/*...*/}
+
+第二个是一布尔值，用于报告元素是否真的存在。
+### len
+
+    fmt.Println(len(ages))    //"2"
+map无cap操作！
+
+### 迭代map
+
+    for k,v:=range ages{
+        fmt.Printf("Key:%s\tValue:%d\n",k,v)
+    }
+    //输出
+    Key:alice  Value:13
+    Key:bob  Value:14
+
+### 比较操作
+和slice一样，map之间也不能进行相等比较；唯一的例外是和nil进行比较。
+
+
+### 在函数间传递映射
+和切片类似，传引用，不是传拷贝。保证可以用很小的成本来复制映射。
+
+
+#章小结
+
+    1、数组是构造切片和映射的基石。
+    2、内置函数make可以创建切片和映射，并指定原始的长度和容量（容量是针对slice）。也可以直接使用切片和映射字面量，或者使用字面量作为变量的初始值。
+    3、切片有容量限制，不过可以使用内置的append函数扩展容量。
+    4、映射的增长没有容量或任何限制。
+    5、内置函数len可以用来获取切片或者映射的长度。
+    6、内置函数cap只能用于切片。
+
+## 参考资料
+
+1、《Go语言实战》ch4
