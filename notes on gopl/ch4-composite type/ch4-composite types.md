@@ -195,6 +195,7 @@ nil映射也就是没有引用任何哈希表。
     colors:=map[string]string{}     //注意{}是字面量语法要求的，不是string{}
     //colors:=map[string]string     //与colors:=map[string]string{}这种写法等价
     fmt.Println(colors==nil)        //"false"
+一个短变量声明操作符在一次操作中完成两件事情：**声明一个变量**，并**初始化**。
 
 ## 使用map
 
@@ -229,7 +230,171 @@ map无cap操作！
 ### 在函数间传递映射
 和切片类似，传引用，不是传拷贝。保证可以用很小的成本来复制映射。
 
+## 结构体
+结构类型通过组合一系列固定且唯一的字段来声明。结构里每个字段都会用一个已知类型声明。
+这个已知类型可以是内置类型，也可以是其他用户定义的类型。
+### 声明一个结构类型
+    
+    type person struct{
+        name string
+        age int
+    }
+    
+    type Transaction struct {
+    	data txdata
+    	// caches
+    	hash atomic.Value
+    	size atomic.Value
+    	from atomic.Value
+    }
+    
+    type txdata struct {
+    	AccountNonce uint64          `json:"nonce"    gencodec:"required"`
+    	Price        *big.Int        `json:"gasPrice" gencodec:"required"`
+    	GasLimit     uint64          `json:"gas"      gencodec:"required"`
+    	Recipient    *common.Address `json:"to"       rlp:"nil"` // nil means contract creation
+    	Amount       *big.Int        `json:"value"    gencodec:"required"`
+    	Payload      []byte          `json:"input"    gencodec:"required"`
+    
+    	// Signature values
+    	V *big.Int `json:"v" gencodec:"required"`
+    	R *big.Int `json:"r" gencodec:"required"`
+    	S *big.Int `json:"s" gencodec:"required"`
+    
+    	// This is only used when marshaling to JSON.
+    	Hash *common.Hash `json:"hash" rlp:"-"`
+    }
+    
+一旦声明了类型，就可以使用这个类型创建值。
+    
+    //声明person类型的变量p
+    var p person
+    fmt.Println(p)             //"{ 0}"  
+任何时候，创建一个变量并初始化为其零值，习惯是使用关键字var。这种用法是为了更明确地表示一个变量被设置为零值。
+如果变量被初始化为某个非零值，就配合结构字面量和短变量声明操作符来创建变量。
 
+### 结构体字面值
+结构体字面量使用一对大括号括住内部字段的初始值。
+
+    //使用结构字面量创建结构类型的值
+    p:=person{
+        name:"gzuhlwang",
+        age:20,
+    }
+    fmt.Println(p)                //"{gzuhlwang 20}"
+    fmt.Printf("%T\n",p)          //"main.person"
+第一种形式更常用，以成员名字和相应的值来初始化，可能包含部分或全部的成员。在这种形式的结构体字面值写法中，
+如果成员被忽略的话将默认用零值。因为提供了成员的名字，所有成员出现的顺序并不重要。
+   
+    //不使用字段名，只声明对应的值
+    p:=person{"gzuhlwang",20}
+第二种形式一般只在定义结构体的包内部使用，或者是在较小的结构体中使用。
+## 空结构体（empty struct）
+
+如果结构体没有任何成员就是空结构体，写作struct{}。它的大小为0，也不包含任何信息，但是有时候依然是有价值的。
+
+## 使用结构体
+
+### 结构体比较
+如果结构体的全部成员是可以比较的，那么结构体也是可以比较的。
+相等比较运算符==将比较两个结构体的每个成员。因此下面两个比较的表达式是等价的。
+
+    type Point struct{X, Y int}
+    
+    p:=Point{1,2}
+    q:=Point{2,1}
+    fmt.Println(p.X==q.X&&p.Y==q.Y)     //"false"
+    fmt.Println(p==q)                   //"false"
+可比较的结构体类型和其他类型一样，可以用作map的key类型。
+
+    type address struct{
+        hostname string
+        port int
+    }   
+    
+    hits:=make(map[address]int)
+    hits[address{"golang.org",443}]++
+### 在函数间传递结构体  
+结构体可以作为函数的参数和返回值。在Go语言中，所有的函数传参都是值拷贝传入的，函数参数将不再是函数调用时
+的原始变量。如果考虑效率的话，较大的结构体通常会用指针的方式传入和返回。
+
+### 结构体嵌入和匿名成员
+
+匿名成员的数据类型必须是命名的类型或指向一个命名的类型的指针。
+
+    type Circle struct{
+        Point
+        Radius int
+    }
+
+不幸的是，结构体字面值并没有简短表示匿名成员的语法，因此下面的语句都不能编译通过：
+    
+    c:=Circle{X:8,Y:8,Radius:5}     //compile error:unknown field
+结构体字面量必须遵循类型声明时的形状。
+    
+    c:=Circle{
+        Point:Point{X:8,Y:8},       //成员名字只能是Point，成员名字是由其类型隐式地决定的
+        Radius:5,
+    }
+    fmt.Printf("%#v\n",c)           //"main.Circle{Point:main.Point{X:8, Y:8}, Radius:5}"
+所有匿名成员也有可见性的规则约束。
+
+**但是为什么要嵌入一个没有任何子成员类型的匿名成员类型呢？**
+
+答案是匿名类型的方法集。简短的点运算符语法可以用于选择匿名成员类型的成员，也可以用于访问它们的方法。实际上，
+外层的结构体不仅仅是获得了匿名成员类型的所有成员，而且也获得了该类型可导出的全部方法。这个机制可以用于将一个
+有简单行为的对象组合成有复杂行为的对象。组合（composition）是Go语言中面向对象编程的核心。
+
+    package main
+    
+    import "fmt"
+    
+    type person struct{
+    	name string
+    	email string
+    }
+    
+    func (p *person) notify(){
+    	fmt.Printf("Sending user email to %s<%s>\n",p.name,p.email)
+    }
+    type admin struct{
+    	p person
+    	level string
+    }
+    //嵌入类型
+    //type admin struct{
+    //   	person
+    //    	level string
+    //}
+    
+    func main(){  
+    	ad:=admin{
+    		p:person{
+    			name:"gzuhlwang",
+    			email:"gzuhlwang@gzu.edu.cn",
+    		},
+    		level:"root",
+    	}
+    
+    	ad.p.notify()
+        
+        //不采用嵌入类型，提示该方法未定义！
+    	ad.notify()                 //"ad.notify undefined (type admin has no field or method notify)"
+  
+    }
+因此，通过上面的例子可以看出，Go语言中外部类型复用内部类型的成员和方法是通过**结构体嵌入**实现的。必须遵循这一语言设计规范，只有这样你想要的效果才能出来。    
+
+ps：Go语言允许用户扩展或者修改已有类型的行为。这个功能对代码复用很重要，在修改已有类型以符合新类型的时候也很重要。**这个功能是通过嵌入类型(type embedding)完成的**。嵌入类型是将**已有的类型**直接声明在新的结构类型里。被嵌入的类型被称为新的**外部类型**的**内部类型**。
+   **通过嵌入类型，与内部类型相关的标识符会提升到外部类型上**。这些被提升的标识符就像直接声明在外部类型里的标识符一样，也是外部类型的一部分。这样外部类型就**组合**了内部类型包含的所有属性（成员），并且可以添加新的字段和方法。
+   外部类型也可以通过声明与内部类型标识符同名的标识符来覆盖内部标识符的字段或者方法。这就是扩展或者修改已有类型的方法。
+
+由于内部类型的提升，**内部类型实现的接口**会自动提升到外部类型。
+这意味着由于内部类型的实现，外部类型也同样实现了这个接口。
+    
+    这个知识点可以参阅《Go语言实战》第5.5节的内容。
+值得一提的是，这个知识点在tendermint的启动中用到了。这个知识点的具体用法可以参见我的文章[Tendermint源码分析——启动流程分析](https://blog.csdn.net/keencryp/article/details/80149953)
+。  
+**其实反过头来觉得，把一些基础知识掌握好对阅读别人的代码是有好处的，否则你会陷入迷茫之中。**
 #章小结
 
     1、数组是构造切片和映射的基石。
@@ -241,4 +406,4 @@ map无cap操作！
 
 ## 参考资料
 
-1、《Go语言实战》ch4
+1、《Go语言实战》中相关章节的内容（主要集中在chapter 4和chapter 5.5）
