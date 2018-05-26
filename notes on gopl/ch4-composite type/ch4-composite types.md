@@ -293,6 +293,34 @@ map无cap操作！
 
 如果结构体没有任何成员就是空结构体，写作struct{}。它的大小为0，也不包含任何信息，但是有时候依然是有价值的。
 
+    package main
+    
+    import "fmt"
+    
+    func main() {
+    
+    	var p struct {
+    		X int
+    		Y int
+    	}
+    	fmt.Printf("%T\n", p)       //"struct { X int; Y int }"
+    	fmt.Println(p)              //"{0 0}"
+    	
+    	seen := make(map[string]struct{})
+    	s := "hello"
+    	if _, ok := seen[s]; !ok {
+    		seen[s] = struct{}{}
+    	}
+    
+    	fmt.Println(seen) //"map[hello:{}]"
+    
+    	var pp struct{}
+    
+    	fmt.Printf("%T\n", pp)     //"struct {}"
+    	fmt.Println(pp)            //"{}"
+    }
+
+
 ## 使用结构体
 
 ### 结构体比较
@@ -382,6 +410,7 @@ map无cap操作！
     	ad.notify()                 //"ad.notify undefined (type admin has no field or method notify)"
   
     }
+    
 因此，通过上面的例子可以看出，Go语言中外部类型复用内部类型的成员和方法是通过**结构体嵌入**实现的。必须遵循这一语言设计规范，只有这样你想要的效果才能出来。    
 
 ps：Go语言允许用户扩展或者修改已有类型的行为。这个功能对代码复用很重要，在修改已有类型以符合新类型的时候也很重要。**这个功能是通过嵌入类型(type embedding)完成的**。嵌入类型是将**已有的类型**直接声明在新的结构类型里。被嵌入的类型被称为新的**外部类型**的**内部类型**。
@@ -394,8 +423,10 @@ ps：Go语言允许用户扩展或者修改已有类型的行为。这个功能�
     这个知识点可以参阅《Go语言实战》第5.5节的内容。
 值得一提的是，这个知识点在tendermint的启动中用到了。这个知识点的具体用法可以参见我的文章[Tendermint源码分析——启动流程分析](https://blog.csdn.net/keencryp/article/details/80149953)
 。  
+
 **其实反过头来觉得，把一些基础知识掌握好对阅读别人的代码是有好处的，否则你会陷入迷茫之中。**
-#章小结
+
+##章小结
 
     1、数组是构造切片和映射的基石。
     2、内置函数make可以创建切片和映射，并指定原始的长度和容量（容量是针对slice）。也可以直接使用切片和映射字面量，或者使用字面量作为变量的初始值。
