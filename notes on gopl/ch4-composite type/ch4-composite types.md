@@ -451,6 +451,7 @@ JSON是对JavaScript中各种类型的值——字符串、数字、布尔值和
     }
 
 在结构体声明中，Year和Color成员后面的字符串字面值是结构体成员tag（field tag）。
+    
     var movies=[]Movie{
         {Title: "Casablanca", Year: 1942, Color: false,
             Actors: []string{"Humphrey Bogart", "Ingrid Bergman"}}, 
