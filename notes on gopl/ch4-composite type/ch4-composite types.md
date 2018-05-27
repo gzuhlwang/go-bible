@@ -426,6 +426,116 @@ ps：Go语言允许用户扩展或者修改已有类型的行为。这个功能�
 
 **其实反过头来觉得，把一些基础知识掌握好对阅读别人的代码是有好处的，否则你会陷入迷茫之中。**
 
+## JSON
+JavaScript对象表示法（JSON）是一种用于发送和接收结构化信息的标准协议。类似的协议还有XML、ASN.1和Google的Protocol Buffers。它们各有特色，但由于简洁性、可读性和流行程度
+等原因，JSON是应用最广泛的一个。
+
+JSON是对JavaScript中各种类型的值——字符串、数字、布尔值和对象——Unicode文本编码。
+
+基本的JSON类型有数字（十进制或科学计数法）、布尔值（true or false）、字符串。其中字符串是以双引号包含的Unicode字符序列，支持和Go
+语言类似的反斜杠转义特性，不过JSON使用的是UTF-16编码，而不是Go语言的rune类型。
+
+    boolean     true
+    number      -273.15
+    string      "she said \"Hello,BF\"
+    array       ["gold","silver","bronze"]
+    object      {"year":1980,
+                 "event":"archery",
+                 "medals":["gold","silver","bronze"]}
+
+    type Movie struct{
+        Title string
+        Year  int       `json:"released"`
+        Color bool      `json:"color,omitempty"`
+        Actors []string 
+    }
+
+在结构体声明中，Year和Color成员后面的字符串字面值是结构体成员tag（field tag）。
+    var movies=[]Movie{
+        {Title: "Casablanca", Year: 1942, Color: false,
+            Actors: []string{"Humphrey Bogart", "Ingrid Bergman"}}, 
+        {Title: "Cool Hand Luke", Year: 1967, Color: true,
+            Actors: []string{"Paul Newman"}}, 
+        {Title: "Bullitt", Year: 1968, Color: true,
+            Actors: []string{"Steve McQueen", "Jacqueline Bisset"}},
+        // ...
+    }
+这样的数据结构特别适合JSON格式，并且在两种之间相互转换也很容易。将一个Go语言中类似movies的
+结构体slice转为JSON的过程叫编组（marshaling），也叫序列化(serialization)。编组通过
+调用json.Marshal函数完成：
+    
+    data,err:=json.Marshal(movies)
+    if err!=nil{
+        log.Fatalf("JSON marshaling failed:%s",err)
+    }
+    fmt.Printf("%s\n",data)
+    //输出
+    [{"Title":"Casablanca","released":1942,"Actors":["Humphrey Bogart","Ingrid Bergman"]},{"Title":"Cool Hand Luke","released":1967,"color":true,"Actors":["Paul Newman"]},{"Title":"Bullitt","released":1968,"color":true,"Actors":["Steve McQueen","Jacqueline Bisset"]}]
+这种紧凑的表示形式虽然包含了全部的信息，但是很难阅读。为了生成便于阅读的格式，另一个json.MarshalIndent函数将产生
+整齐缩进的输出。该函数有两个额外的字符串参数用于表示每一行输出的前缀和每一层级的缩进：
+
+    data,err:=json.MarshalIndent(movies,""," ")
+    if err!=nil{
+    	log.Fatalf("JSON marshaling failed:%s",err)
+    }
+    fmt.Printf("%s\n",data)
+    //输出
+    [
+     {
+      "Title": "Casablanca",
+      "released": 1942,
+      "Actors": [
+       "Humphrey Bogart",
+       "Ingrid Bergman"
+      ]
+     },
+     {
+      "Title": "Cool Hand Luke",
+      "released": 1967,
+      "color": true,
+      "Actors": [
+       "Paul Newman"
+      ]
+     },
+     {
+      "Title": "Bullitt",
+      "released": 1968,
+      "color": true,
+      "Actors": [
+       "Steve McQueen",
+       "Jacqueline Bisset"
+      ]
+     }
+    ]
+
+在编码时，默认使用Go语言结构体成员名字作为JSON的对象（通过reflect反射计数），只有导出
+的结构体成员才会被编码，这也就是我们为什么选择大写字母开头的成员名称。
+
+一个结构体成员tag是和在编译阶段关联到该成员的元数据字符串。
+    
+     Year  int       `json:"released"`
+     Color bool      `json:"color,omitempty"`
+
+结构体的成员tag可以是任意的字符串字面值，但通常是一系列用空格分隔的key:"value"键值对序列。因为
+值包含双引号字符，因此成员tag一般用原生字符串字面值的形式书写。以json开头的key对应的值
+用于控制encoding/json包的编解码的行为，并且encoding/...下面其他的包也遵循这样的约定。成员tag
+中json对应值的第一部分用于指定JSON对象的名字。比如Color成员的tag，还带了一个额外的omitempty选项，
+表示当Go语言结构体成员为空或零值时不生成JSON对象（这里false为零值）。
+
+编码的逆操作是解码，对应将JSON数据解码为Go语言的数据结构，Go语言中一般叫unmarshaling，也叫反序列化（deserialization），通过json.Unmarshal函数完成。
+下面的代码将JSON格式的电影数据解码为一个结构体slice，结构体中只有Title成员。通过定义合适的Go语言数据结构，我们可以选择性
+地解码JSON中感兴趣的成员。当Unmarshal函数调用返回，slice将只含有Title信息值填充，其他JSON
+成员将被忽略。
+    
+    var titles []struct{Title string}         //注意学习这种写法
+    if err:=json.Unmarshal(data,&titles);err!=nil{
+        log.Fatalf("JSON Unmarshaling failed:%s",err)
+    }
+    fmt.Println(titles)                       //"[{Casablanca} {Cool Hand Luke} {Bullitt}]"
+
+
+ 
+    
 ##章小结
 
     1、数组是构造切片和映射的基石。
