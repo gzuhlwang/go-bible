@@ -1,2 +1,2 @@
 # go-bible
-some notes,source code on gopl.
+gopl,revisited. notes,source code on gopl.
