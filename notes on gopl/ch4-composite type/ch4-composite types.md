@@ -102,17 +102,17 @@ slice是变长序列。一个slice类型一般写作[]T,其中T代表slice中元
 ​    array:=[3]int{10,20,30}
 ​    fmt.Printf("%T\n",array)           //"[3]int"
 ​    
-    slice:=[]int{10,20,30}
-    fmt.Printf("%T\n",slice)           //"[]int"
+​    slice:=[]int{10,20,30}
+​    fmt.Printf("%T\n",slice)           //"[]int"
 
 ## nil和空切片
 
 有时，程序可能需要声明一个值为nil的切片（也称nil切片）。只要在声明时不做任何初始化，就会创建一个nil切片。
 ​    
-    //创建nil切片
-    var slice  []int                  //"nil"
-    fmt.Println(len(slcie),cap(slice),slice==nil)   //"0 0 true"
-    
+​    //创建nil切片
+​    var slice  []int                  //"nil"
+​    fmt.Println(len(slcie),cap(slice),slice==nil)   //"0 0 true"
+​    
     //使用make创建空的整型切片
     slice:=make([]int,0)
     
@@ -145,8 +145,8 @@ for range
 
 关键字range总是会从切片头部开始迭代。如果想对迭代做更多的控制，依旧可以使用传统的for循环。
 ​    
-    slice:=[]int{10,20,30,40}
-    
+​    slice:=[]int{10,20,30,40}
+​    
     for index:=2;index<len(slice);index++{
     	fmt.Printf("Index:%d\t Value:%d\n",index,slice[index])
     }
@@ -181,6 +181,9 @@ slice的用处比数组广泛，需要好好掌握。
         "alice":13,
         "bob":14,
     }
+    
+    //创建空map
+    m:=map[string]int{}  //在功能上等同于m:=make(map[string]int)
 
 创建映射时更常用的方法是使用map字面值。
 
@@ -267,9 +270,9 @@ map无cap操作！
 
 一旦声明了类型，就可以使用这个类型创建值。
 ​    
-    //声明person类型的变量p
-    var p person
-    fmt.Println(p)             //"{ 0}"  
+​    //声明person类型的变量p
+​    var p person
+​    fmt.Println(p)             //"{ 0}"  
 任何时候，创建一个变量并初始化为其零值，习惯是使用关键字var。这种用法是为了更明确地表示一个变量被设置为零值。
 如果变量被初始化为某个非零值，就配合结构字面量和短变量声明操作符来创建变量。
 
@@ -380,14 +383,14 @@ fmt.Println(outcome1,outcome2,outcome3)
 
 不幸的是，结构体字面值并没有简短表示匿名成员的语法，因此下面的语句都不能编译通过：
 ​    
-    c:=Circle{X:8,Y:8,Radius:5}     //compile error:unknown field
+​    c:=Circle{X:8,Y:8,Radius:5}     //compile error:unknown field
 结构体字面量必须遵循类型声明时的形状。
 ​    
-    c:=Circle{
-        Point:Point{X:8,Y:8},       //成员名字只能是Point，成员名字是由其类型隐式地决定的
-        Radius:5,
-    }
-    fmt.Printf("%#v\n",c)           //"main.Circle{Point:main.Point{X:8, Y:8}, Radius:5}"
+​    c:=Circle{
+​        Point:Point{X:8,Y:8},       //成员名字只能是Point，成员名字是由其类型隐式地决定的
+​        Radius:5,
+​    }
+​    fmt.Printf("%#v\n",c)           //"main.Circle{Point:main.Point{X:8, Y:8}, Radius:5}"
 所有匿名成员也有可见性的规则约束。
 
 **但是为什么要嵌入一个没有任何子成员类型的匿名成员类型呢？**
@@ -443,7 +446,7 @@ ps：Go语言允许用户扩展或者修改已有类型的行为。这个功能�
 由于内部类型的提升，**内部类型实现的接口**会自动提升到外部类型。
 这意味着由于内部类型的实现，外部类型也同样实现了这个接口。
 ​    
-    这个知识点可以参阅《Go语言实战》第5.5节的内容。
+​    这个知识点可以参阅《Go语言实战》第5.5节的内容。
 值得一提的是，这个知识点在tendermint的启动中用到了。这个知识点的具体用法可以参见我的文章[Tendermint源码分析——启动流程分析](https://blog.csdn.net/keencryp/article/details/80149953)
 。  
 
@@ -475,26 +478,26 @@ JSON是对JavaScript中各种类型的值——字符串、数字、布尔值和
 
 在结构体声明中，Year和Color成员后面的字符串字面值是结构体成员tag（field tag）。
 ​    
-    var movies=[]Movie{
-        {Title: "Casablanca", Year: 1942, Color: false,
-            Actors: []string{"Humphrey Bogart", "Ingrid Bergman"}}, 
-        {Title: "Cool Hand Luke", Year: 1967, Color: true,
-            Actors: []string{"Paul Newman"}}, 
-        {Title: "Bullitt", Year: 1968, Color: true,
-            Actors: []string{"Steve McQueen", "Jacqueline Bisset"}},
-        // ...
-    }
+​    var movies=[]Movie{
+​        {Title: "Casablanca", Year: 1942, Color: false,
+​            Actors: []string{"Humphrey Bogart", "Ingrid Bergman"}}, 
+​        {Title: "Cool Hand Luke", Year: 1967, Color: true,
+​            Actors: []string{"Paul Newman"}}, 
+​        {Title: "Bullitt", Year: 1968, Color: true,
+​            Actors: []string{"Steve McQueen", "Jacqueline Bisset"}},
+​        // ...
+​    }
 这样的数据结构特别适合JSON格式，并且在两种之间相互转换也很容易。将一个Go语言中类似movies的
 结构体slice转为JSON的过程叫编组（marshaling），也叫序列化(serialization)。编组通过
 调用json.Marshal函数完成：
 ​    
-    data,err:=json.Marshal(movies)
-    if err!=nil{
-        log.Fatalf("JSON marshaling failed:%s",err)
-    }
-    fmt.Printf("%s\n",data)
-    //输出
-    [{"Title":"Casablanca","released":1942,"Actors":["Humphrey Bogart","Ingrid Bergman"]},{"Title":"Cool Hand Luke","released":1967,"color":true,"Actors":["Paul Newman"]},{"Title":"Bullitt","released":1968,"color":true,"Actors":["Steve McQueen","Jacqueline Bisset"]}]
+​    data,err:=json.Marshal(movies)
+​    if err!=nil{
+​        log.Fatalf("JSON marshaling failed:%s",err)
+​    }
+​    fmt.Printf("%s\n",data)
+​    //输出
+​    [{"Title":"Casablanca","released":1942,"Actors":["Humphrey Bogart","Ingrid Bergman"]},{"Title":"Cool Hand Luke","released":1967,"color":true,"Actors":["Paul Newman"]},{"Title":"Bullitt","released":1968,"color":true,"Actors":["Steve McQueen","Jacqueline Bisset"]}]
 这种紧凑的表示形式虽然包含了全部的信息，但是很难阅读。为了生成便于阅读的格式，另一个json.MarshalIndent函数将产生
 整齐缩进的输出。该函数有两个额外的字符串参数用于表示每一行输出的前缀和每一层级的缩进：
 
@@ -537,8 +540,8 @@ JSON是对JavaScript中各种类型的值——字符串、数字、布尔值和
 
 一个结构体成员tag是和在编译阶段关联到该成员的元数据字符串。
 ​    
-     Year  int       `json:"released"`
-     Color bool      `json:"color,omitempty"`
+​     Year  int       `json:"released"`
+​     Color bool      `json:"color,omitempty"`
 
 结构体的成员tag可以是任意的字符串字面值，但通常是一系列用空格分隔的key:"value"键值对序列。因为
 值包含双引号字符，因此成员tag一般用原生字符串字面值的形式书写。以json开头的key对应的值
@@ -551,11 +554,11 @@ JSON是对JavaScript中各种类型的值——字符串、数字、布尔值和
 地解码JSON中感兴趣的成员。当Unmarshal函数调用返回，slice将只含有Title信息值填充，其他JSON
 成员将被忽略。
 ​    
-    var titles []struct{Title string}         //注意学习这种写法
-    if err:=json.Unmarshal(data,&titles);err!=nil{
-        log.Fatalf("JSON Unmarshaling failed:%s",err)
-    }
-    fmt.Println(titles)                       //"[{Casablanca} {Cool Hand Luke} {Bullitt}]"
+​    var titles []struct{Title string}         //注意学习这种写法
+​    if err:=json.Unmarshal(data,&titles);err!=nil{
+​        log.Fatalf("JSON Unmarshaling failed:%s",err)
+​    }
+​    fmt.Println(titles)                       //"[{Casablanca} {Cool Hand Luke} {Bullitt}]"
 
 ## 文本和HTML模版
 
