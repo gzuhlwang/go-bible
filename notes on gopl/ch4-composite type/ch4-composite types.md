@@ -60,7 +60,9 @@
 ## slice
 
 slice是变长序列。一个slice类型一般写作[]T,其中T代表slice中元素的类型。slice的语法和数组很像，只是没有固定长度而已。
+
 一个slice由三分部分构成：指针、长度和容量。指针指向第一个slice元素对应的底层数组元素的地址。要注意：slice的第一个元素
+
 并不一定就是数组的第一个元素。长度对应slice中元素的数目；长度不能超过容量，容量一般是从slice的开始位置到底层数据的结尾
 位置。
 
@@ -99,26 +101,32 @@ slice是变长序列。一个slice类型一般写作[]T,其中T代表slice中元
 ## 声明数组 vs 声明切片
 
 如果在[]运算符里指定了一个值，那么创建的就是数组而不是切片。只有不指定值的时候，才会创建切片。
-​    array:=[3]int{10,20,30}
-​    fmt.Printf("%T\n",array)           //"[3]int"
-​    
-​    slice:=[]int{10,20,30}
-​    fmt.Printf("%T\n",slice)           //"[]int"
+​ 
+
+```
+array:=[3]int{10,20,30}
+fmt.Printf("%T\n",array)           //"[3]int"
+    
+slice:=[]int{10,20,30}
+fmt.Printf("%T\n",slice)           //"[]int"
+```
 
 ## nil和空切片
 
 有时，程序可能需要声明一个值为nil的切片（也称nil切片）。只要在声明时不做任何初始化，就会创建一个nil切片。
-​    
-​    //创建nil切片
-​    var slice  []int                  //"nil"
-​    fmt.Println(len(slcie),cap(slice),slice==nil)   //"0 0 true"
-​    
-    //使用make创建空的整型切片
-    slice:=make([]int,0)
-    
-    //使用切片字面量创建空的整型切片
-    slice:=[]int{}
-    fmt.Println(len(slice),cap(slice),slice==nil)   //"0 0 false"
+
+```
+//创建nil切片
+var slice  []int                                //"nil"
+fmt.Println(len(slcie),cap(slice),slice==nil)   //"0 0 true"
+   
+//使用make创建空的整型切片
+slice:=make([]int,0)
+
+//使用切片字面量创建空的整型切片
+slice:=[]int{}
+fmt.Println(len(slice),cap(slice),slice==nil)   //"0 0 false"
+```
 
 空切片在底层数组包含0个元素，也没有分配任何存储空间。想表示空集合时空切片很有用。注意，如果我们像测试一个slice是否为空，应该使用len(s)==0来判断，
 而不应该使用s==nil来判断。**除了和nil相等比较外，一个nil值的slice的行为和其他任意0长度的slice一样**。
@@ -144,20 +152,22 @@ todo
 for range
 
 关键字range总是会从切片头部开始迭代。如果想对迭代做更多的控制，依旧可以使用传统的for循环。
-​    
-​    slice:=[]int{10,20,30,40}
-​    
-    for index:=2;index<len(slice);index++{
-    	fmt.Printf("Index:%d\t Value:%d\n",index,slice[index])
-    }
+
+```
+slice:=[]int{10,20,30,40}    
+
+for index:=2;index<len(slice);index++{
+	fmt.Printf("Index:%d\t Value:%d\n",index,slice[index])
+}
+```
 
 
 ### 在函数间传递切片
 
 切片的尺寸很小，在函数间复制和传递切片成本也很低。
-​    
-在64位架构的机器上，一个切片需要24字节的内存：指针字段需要8字节，长度和容量字段分别需要8字节。由于与切片关联
-的数据包含在底层数组里，不属于切片本身，所以将切片复制到任意函数的时候，对底层数组大小都不会有影响。
+
+在64位架构的机器上，一个切片需要24字节的内存：指针字段需要8字节，长度和容量字段分别需要8字节。由于与切片关联的数据包含在底层数组里，不属于切片本身，所以将切片复制到任意函数的时候，对底层数组大小都不会有影响。
+
 在函数间传递24字节的数据会非常快速、简单。这也是切片效率高的地方。不需要传递指针和处理复杂的语法，只需要复制
 切片。
 
@@ -270,10 +280,15 @@ map无cap操作！
 
 一旦声明了类型，就可以使用这个类型创建值。
 ​    
-​    //声明person类型的变量p
-​    var p person
-​    fmt.Println(p)             //"{ 0}"  
+
+```
+//声明person类型的变量p
+var p person
+fmt.Println(p)             //"{ 0}"  
+```
+
 任何时候，创建一个变量并初始化为其零值，习惯是使用关键字var。这种用法是为了更明确地表示一个变量被设置为零值。
+
 如果变量被初始化为某个非零值，就配合结构字面量和短变量声明操作符来创建变量。
 
 ### 结构体字面值
@@ -346,8 +361,7 @@ map无cap操作！
     hits:=make(map[address]int)
     hits[address{"golang.org",443}]++
 ### 在函数间传递结构体  
-结构体可以作为函数的参数和返回值。在Go语言中，所有的函数传参都是值拷贝传入的，函数参数将不再是函数调用时
-的原始变量。如果考虑效率的话，较大的结构体通常会用指针的方式传入和返回。
+结构体可以作为函数的参数和返回值。在Go语言中，所有的函数传参都是值拷贝传入的，函数参数将不再是函数调用时的原始变量。如果考虑效率的话，较大的结构体通常会用指针的方式传入和返回。
 
 ### 结构体指针变量
 
@@ -355,21 +369,71 @@ map无cap操作！
 
 ```
 //定义结构体
-
 type Outcome struct{
 	ID int
 	Result string
+	f  func(int32) chan int
 }
-```
 
-```
 //声明结构体指针变量
 outcome1:=new(Outcome)  //指向Outcome结构体的指针变量
 outcome2:=&Outcome{}    //指向Outcome结构体的指针变量
-outcome3:=Outcome{}
+outcome3:=Outcome{}     //省略所有的字段  和var outcome3 Outcome功能一样
+outcome4:=Outcone{ID:5,Result:"Good"}  //省略f字段，未指定值的字段用零值初始化
 fmt.Printf("%p %p",outcome1,outcome2)   //打印二者的地址
 fmt.Println(*outcome1==*outcome2,outcome1==outcome2)  //"true" "false" 第一个是比较指向的结构体的值
 fmt.Println(outcome1,outcome2,outcome3)
+fmt.Println(outcome4)   // "{5 Good <nil>}"
+fmt.Printf("%d\n",unsafe.Sizeof(Outcome{}))  //Outcome实例占用的内存
+```
+
+再举一个实用例子：
+
+```
+type RD struct {
+	Sym  string  
+	Dec int     
+	P   float64 
+}
+
+type FetchPrice struct{
+   ToPrice map[string]RealData
+   FetchPriceMux sync.RWMutex
+}
+
+func New() *FetchPrice{
+   f:=new(FetchPrice)
+   return f
+}
+
+func main(){
+    ff:=New()
+	ff.ToPrice["E"]=RD{
+		Symbol :"E",
+		Decimal:1,
+		Price:1,
+	}
+	fmt.Println(ff.ToPrice) //panic: assignment to entry in nil map
+}
+```
+
+运行上面的例子会引发`panic: assignment to entry in nil map`。究其原因是`New()`返回来的实例`ff`的`ToPrice`字段的值是`nil`（因为`map`类型的零值是`nil`）。因此在对`nil map`进行赋值时，会报错。解决办法很简单，如下：
+
+```
+//写法1
+func New() *FetchPrice{
+   f := new(FetchPrice)
+   f.ToPrice = make(map[string]RD) //初始化map
+   return f
+}
+
+//写法2
+func New() *FetchPrice{
+   f := &FetchPrice{
+      ToPrice: make(map[string]RD) //初始化map
+   }
+   return f
+}
 ```
 
 ### 结构体嵌入和匿名成员
@@ -382,15 +446,25 @@ fmt.Println(outcome1,outcome2,outcome3)
     }
 
 不幸的是，结构体字面值并没有简短表示匿名成员的语法，因此下面的语句都不能编译通过：
-​    
-​    c:=Circle{X:8,Y:8,Radius:5}     //compile error:unknown field
+
+```
+ c:=Circle{X:8,Y:8,Radius:5}     //compile error:unknown field [注]X和Y不是Circle的字段
+```
+
 结构体字面量必须遵循类型声明时的形状。
-​    
-​    c:=Circle{
-​        Point:Point{X:8,Y:8},       //成员名字只能是Point，成员名字是由其类型隐式地决定的
-​        Radius:5,
-​    }
-​    fmt.Printf("%#v\n",c)           //"main.Circle{Point:main.Point{X:8, Y:8}, Radius:5}"
+
+结构体字面量必须遵循类型声明时的形状。
+
+```
+c:=Circle{
+    Point:Point{X:8,Y:8},       //成员名字只能是Point，成员名字是由其类型隐式地决定的
+    Radius:5,
+}
+fmt.Printf("%#v\n",c)           //"main.Circle{Point:main.Point{X:8, Y:8}, Radius:5}"
+```
+
+所有匿名成员也有可见性的规则约束。
+
 所有匿名成员也有可见性的规则约束。
 
 **但是为什么要嵌入一个没有任何子成员类型的匿名成员类型呢？**
@@ -440,17 +514,12 @@ fmt.Println(outcome1,outcome2,outcome3)
 因此，通过上面的例子可以看出，Go语言中外部类型复用内部类型的成员和方法是通过**结构体嵌入**实现的。必须遵循这一语言设计规范，只有这样你想要的效果才能出来。    
 
 ps：Go语言允许用户扩展或者修改已有类型的行为。这个功能对代码复用很重要，在修改已有类型以符合新类型的时候也很重要。**这个功能是通过嵌入类型(type embedding)完成的**。嵌入类型是将**已有的类型**直接声明在新的结构类型里。被嵌入的类型被称为新的**外部类型**的**内部类型**。
-   **通过嵌入类型，与内部类型相关的标识符会提升到外部类型上**。这些被提升的标识符就像直接声明在外部类型里的标识符一样，也是外部类型的一部分。这样外部类型就**组合**了内部类型包含的所有属性（成员），并且可以添加新的字段和方法。
-   外部类型也可以通过声明与内部类型标识符同名的标识符来覆盖内部标识符的字段或者方法。这就是扩展或者修改已有类型的方法。
 
-由于内部类型的提升，**内部类型实现的接口**会自动提升到外部类型。
+​	**通过嵌入类型，与内部类型相关的标识符会提升到外部类型上**。这些被提升的标识符就像直接声明在外部类型里的标识符一样，也是外部类型的一部分。这样外部类型就**组合**了内部类型包含的所有属性（成员），并且可以添加新的字段和方法。
+
+​	外部类型也可以通过声明与内部类型标识符同名的标识符来覆盖内部标识符的字段或者方法。这就是扩展或者修改已有类型的方法。由于内部类型的提升，**内部类型实现的接口**会自动提升到外部类型。
 这意味着由于内部类型的实现，外部类型也同样实现了这个接口。
-​    
-​    这个知识点可以参阅《Go语言实战》第5.5节的内容。
-值得一提的是，这个知识点在tendermint的启动中用到了。这个知识点的具体用法可以参见我的文章[Tendermint源码分析——启动流程分析](https://blog.csdn.net/keencryp/article/details/80149953)
-。  
-
-**其实反过头来觉得，把一些基础知识掌握好对阅读别人的代码是有好处的，否则你会陷入迷茫之中。**
+​    这个知识点可以参阅《Go语言实战》第5.5节的内容。值得一提的是，这个知识点在tendermint的启动中用到了。这个知识点的具体用法可以参见我的文章[Tendermint源码分析——启动流程分析](https://blog.csdn.net/keencryp/article/details/80149953)。  **其实反过头来觉得，把一些基础知识掌握好对阅读别人的代码是有好处的，否则你会陷入迷茫之中。**
 
 ## JSON
 JavaScript对象表示法（JSON）是一种用于发送和接收结构化信息的标准协议。类似的协议还有XML、ASN.1和Google的Protocol Buffers。它们各有特色，但由于简洁性、可读性和流行程度
@@ -477,27 +546,37 @@ JSON是对JavaScript中各种类型的值——字符串、数字、布尔值和
     }
 
 在结构体声明中，Year和Color成员后面的字符串字面值是结构体成员tag（field tag）。
-​    
-​    var movies=[]Movie{
-​        {Title: "Casablanca", Year: 1942, Color: false,
-​            Actors: []string{"Humphrey Bogart", "Ingrid Bergman"}}, 
-​        {Title: "Cool Hand Luke", Year: 1967, Color: true,
-​            Actors: []string{"Paul Newman"}}, 
-​        {Title: "Bullitt", Year: 1968, Color: true,
-​            Actors: []string{"Steve McQueen", "Jacqueline Bisset"}},
-​        // ...
-​    }
+
+```
+ var movies=[]Movie{
+      {Title: "Casablanca", Year: 1942, Color: false,
+            Actors: []string{"Humphrey Bogart", "Ingrid Bergman"}}, 
+      {Title: "Cool Hand Luke", Year: 1967, Color: true,
+            Actors: []string{"Paul Newman"}}, 
+      {Title: "Bullitt", Year: 1968, Color: true,
+            Actors: []string{"Steve McQueen", "Jacqueline Bisset"}},
+      // ...
+}
+```
+
 这样的数据结构特别适合JSON格式，并且在两种之间相互转换也很容易。将一个Go语言中类似movies的
 结构体slice转为JSON的过程叫编组（marshaling），也叫序列化(serialization)。编组通过
 调用json.Marshal函数完成：
 ​    
-​    data,err:=json.Marshal(movies)
-​    if err!=nil{
-​        log.Fatalf("JSON marshaling failed:%s",err)
-​    }
-​    fmt.Printf("%s\n",data)
-​    //输出
-​    [{"Title":"Casablanca","released":1942,"Actors":["Humphrey Bogart","Ingrid Bergman"]},{"Title":"Cool Hand Luke","released":1967,"color":true,"Actors":["Paul Newman"]},{"Title":"Bullitt","released":1968,"color":true,"Actors":["Steve McQueen","Jacqueline Bisset"]}]
+
+```
+data,err:=json.Marshal(movies)
+if err!=nil{
+     log.Fatalf("JSON marshaling failed:%s",err)
+}
+fmt.Printf("%s\n",data)
+//输出
+[{"Title":"Casablanca","released":1942,"Actors":["Humphrey Bogart","Ingrid Bergman"]},{"Title":"Cool Hand Luke","released":1967,"color":true,"Actors":["Paul Newman"]},{"Title":"Bullitt","released":1968,"color":true,"Actors":["Steve McQueen","Jacqueline Bisset"]}]
+```
+
+这种紧凑的表示形式虽然包含了全部的信息，但是很难阅读。为了生成便于阅读的格式，另一个json.MarshalIndent函数将产生
+整齐缩进的输出。该函数有两个额外的字符串参数用于表示每一行输出的前缀和每一层级的缩进：
+
 这种紧凑的表示形式虽然包含了全部的信息，但是很难阅读。为了生成便于阅读的格式，另一个json.MarshalIndent函数将产生
 整齐缩进的输出。该函数有两个额外的字符串参数用于表示每一行输出的前缀和每一层级的缩进：
 
@@ -539,9 +618,11 @@ JSON是对JavaScript中各种类型的值——字符串、数字、布尔值和
 的结构体成员才会被编码，这也就是我们为什么选择大写字母开头的成员名称。
 
 一个结构体成员tag是和在编译阶段关联到该成员的元数据字符串。
-​    
-​     Year  int       `json:"released"`
-​     Color bool      `json:"color,omitempty"`
+
+```
+Year  int       `json:"released"`
+Color bool      `json:"color,omitempty"`
+```
 
 结构体的成员tag可以是任意的字符串字面值，但通常是一系列用空格分隔的key:"value"键值对序列。因为
 值包含双引号字符，因此成员tag一般用原生字符串字面值的形式书写。以json开头的key对应的值
@@ -553,19 +634,20 @@ JSON是对JavaScript中各种类型的值——字符串、数字、布尔值和
 下面的代码将JSON格式的电影数据解码为一个结构体slice，结构体中只有Title成员。通过定义合适的Go语言数据结构，我们可以选择性
 地解码JSON中感兴趣的成员。当Unmarshal函数调用返回，slice将只含有Title信息值填充，其他JSON
 成员将被忽略。
-​    
-​    var titles []struct{Title string}         //注意学习这种写法
-​    if err:=json.Unmarshal(data,&titles);err!=nil{
-​        log.Fatalf("JSON Unmarshaling failed:%s",err)
-​    }
-​    fmt.Println(titles)                       //"[{Casablanca} {Cool Hand Luke} {Bullitt}]"
+
+```
+var titles []struct{Title string}         //注意学习这种写法
+if err:=json.Unmarshal(data,&titles);err!=nil{
+    log.Fatalf("JSON Unmarshaling failed:%s",err)
+}
+fmt.Println(titles)                       //"[{Casablanca} {Cool Hand Luke} {Bullitt}]"
+```
 
 ## 文本和HTML模版
 
 todo
 
-
-##章小结
+## 章小结
 
     1、数组是构造切片和映射的基石。
     2、内置函数make可以创建切片和映射，并指定原始的长度和容量（容量是针对slice）。也可以直接使用切片和映射字面量，或者使用字面量作为变量的初始值。
@@ -577,3 +659,5 @@ todo
 ## 参考资料
 
 1、《Go语言实战》中相关章节的内容（主要集中在chapter 4和chapter 5.5）
+
+2、 [go spec中有关零值的描述](https://golang.org/ref/spec#The_zero_value)
