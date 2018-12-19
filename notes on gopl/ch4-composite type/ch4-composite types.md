@@ -453,8 +453,6 @@ func New() *FetchPrice{
 
 结构体字面量必须遵循类型声明时的形状。
 
-结构体字面量必须遵循类型声明时的形状。
-
 ```
 c:=Circle{
     Point:Point{X:8,Y:8},       //成员名字只能是Point，成员名字是由其类型隐式地决定的
@@ -469,9 +467,7 @@ fmt.Printf("%#v\n",c)           //"main.Circle{Point:main.Point{X:8, Y:8}, Radiu
 
 **但是为什么要嵌入一个没有任何子成员类型的匿名成员类型呢？**
 
-答案是匿名类型的方法集。简短的点运算符语法可以用于选择匿名成员类型的成员，也可以用于访问它们的方法。实际上，
-外层的结构体不仅仅是获得了匿名成员类型的所有成员，而且也获得了该类型可导出的全部方法。这个机制可以用于将一个
-有简单行为的对象组合成有复杂行为的对象。组合（composition）是Go语言中面向对象编程的核心。
+答案是匿名类型的方法集。简短的点运算符语法可以用于选择匿名成员类型的成员，也可以用于访问它们的方法。实际上，外层的结构体不仅仅是获得了匿名成员类型的所有成员，而且也获得了该类型可导出的全部方法。这个机制可以用于将一个有简单行为的对象组合成有复杂行为的对象。组合（composition）是Go语言中面向对象编程的核心。
 
     package main
     
@@ -503,7 +499,6 @@ fmt.Printf("%#v\n",c)           //"main.Circle{Point:main.Point{X:8, Y:8}, Radiu
     		},
     		level:"root",
     	}
-    
     	ad.p.notify()
         
         //不采用嵌入类型，提示该方法未定义！
@@ -521,7 +516,43 @@ ps：Go语言允许用户扩展或者修改已有类型的行为。这个功能�
 这意味着由于内部类型的实现，外部类型也同样实现了这个接口。
 ​    这个知识点可以参阅《Go语言实战》第5.5节的内容。值得一提的是，这个知识点在tendermint的启动中用到了。这个知识点的具体用法可以参见我的文章[Tendermint源码分析——启动流程分析](https://blog.csdn.net/keencryp/article/details/80149953)。  **其实反过头来觉得，把一些基础知识掌握好对阅读别人的代码是有好处的，否则你会陷入迷茫之中。**
 
+### 任何类型T都可以作为嵌入字段
+
+go里面struct的嵌入规则可以参考相应的[go规范](https://golang.org/ref/spec#Struct_types)。
+
+```
+type Block struct{
+   PreHash [32]byte
+   int              //int类型作为嵌入字段
+   body    []byte
+}
+
+//初始化
+b1:=Block{PreHash:[32]byte{}, int:10}
+var b2 Block
+fmt.Println(b1.int,b2.int)
+```
+
+但是Block结构内嵌int字段可读性太差，我们可以稍微优化以下。
+
+```
+type BlockHeight int
+type Block struct{
+   PreHash [32]byte
+   BlockHeight   
+   body    []byte
+}
+
+//初始化
+b1:=Block{PreHash:[32]byte{}, BlockHeight:10}
+var b2 Block
+fmt.Println(b1.BlockHeight,b2.BlockHeight)
+```
+
+上面这种写法看上去就比较清晰了。
+
 ## JSON
+
 JavaScript对象表示法（JSON）是一种用于发送和接收结构化信息的标准协议。类似的协议还有XML、ASN.1和Google的Protocol Buffers。它们各有特色，但由于简洁性、可读性和流行程度
 等原因，JSON是应用最广泛的一个。
 
