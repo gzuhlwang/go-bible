@@ -5,6 +5,7 @@ by gzuhlwang
 ## History:
 
 - 2020-02-01: draft v0.0.1
+- 2020-02-05：更新goroutine状态；增加goroutine可能切换的点
 
 ## 0x00 Computer Science 101
 
@@ -168,10 +169,39 @@ strictly, A goroutine is a lightweight user level thread managed by the Go runti
 
 ### The State of Goroutine
 
+- Creation
+
+  using go keyword,e.g. go func()
+
 - Runnable
+
+  goready
+
 - Running
-- Not Runnable(e.g.blocked)
-- Starved?(饿死)
+
+- Exit
+
+  goexit
+
+- Waiting
+
+  gopark
+
+
+
+  ps:goroutine可能切换的点：
+
+  1、I/O(net io,部分file io)
+
+  2、显式地调用runtime.Gosched()让出资源
+
+  3、channel（阻塞写或读通道的goroutine）
+
+  4、select（默认阻塞）
+
+  5、一个goroutine拿到锁，另一个goroutine会等待锁
+
+  上面只是参考，不保证切换，不保证在其他地方不切换goroutine。
 
 ### Milestones of Go(routine) Scheduler
 
