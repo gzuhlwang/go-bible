@@ -6,6 +6,7 @@ by gzuhlwang
 
 - 2020-02-01: draft v0.0.1
 - 2020-02-05：更新goroutine状态；增加goroutine可能切换的点
+- 2020-02-09：在take away部分更新Dave Sheney关于goroutine的论述；在参考资料部分添加[panjf2000](https://gocn.vip/people/4028)的文章
 
 ## 0x00 Computer Science 101
 
@@ -215,8 +216,14 @@ strictly, A goroutine is a lightweight user level thread managed by the Go runti
 ## Take Away
 
 - Go is a concurrency oriented language.
+
 - Go supports both communication by sharing memory and  shared memory by communicating.
+
 - Concurrency is not parallelism, it's better.
+
+- Never start a goroutine without knowing when it will stop. —— Dave Cheney
+
+  （goroutine会占用资源：锁，变量，内存。释放这些资源可靠方法是停止相应的goroutine。）
 
 ## Reference
 
@@ -236,6 +243,8 @@ http://web.mit.edu/6.031/www/sp17/classes/19-concurrency/#message_passing_exampl
 Hoare's CSP paper 【Must Read】
 
 Operating Systems: Three Easy Pieces
+
+[Goroutine并发调度模型深度解析之手撸一个协程池](https://segmentfault.com/a/1190000015464889):作者回顾了3大线程模型，Go调度模型G-M-P，是对本slide的细化。
 
 
 
