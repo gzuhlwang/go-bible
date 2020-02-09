@@ -35,3 +35,5 @@ Operating System: Three Easy Pieces
 [Uber Go 语言编码规范](https://github.com/uber-go/guide)
 
 [Idiomatic Go](https://dmitri.shuralyov.com/idiomatic-go) by [Dmitri Shuralyov](https://github.com/dmitshur)
+
+[Practical Go: Real world advice for writing maintainable Go programs](https://dave.cheney.net/practical-go/presentations/qcon-china.html) from Dave Cheney。[中文版](https://studygolang.com/articles/16335?fr=sidebar)
