@@ -62,6 +62,40 @@ type Semaphore chan struct{}
 
 有关信号量和同步问题，可以阅读开源书籍[《The little Book of Semaphores》](http://greenteapress.com/semaphores/LittleBookOfSemaphores.pdf)。
 
+3、结构体中嵌入接口
+
+go标准库中，sort.Interface接口定义如下。
+
+```
+type Interface interface{
+	Len() int
+	Less(i, j int) bool
+	Swap(i, j int)
+}
+```
+
+sort.reverse结构定义如下。
+
+```
+type reverse struct{
+	Interface   // embedded field
+}
+
+func (r reverse) Less(i, j int) bool{
+    return r.Interface.Less(j, i)
+}
+
+func Reverse(data Interface) Interface{
+    return &reverse{data}
+}
+```
+
+reverse类型实现了Interface接口。啥？我怎么没看出来？ 记住，go规定，嵌入类型的字段和方法会被提升到外层。reverse.Interface的实例是一个实现了sort.Interface接口的类型。reverse类型重载了Less方法。Len()和Swap()方法由嵌入类型提供。
+
+这样写，有时候给阅读代码会带来一些麻烦。很多开源项目爱这么干。
+
+[go语言规范](https://golang.google.cn/ref/spec#Struct_types)中有提到嵌入字段的用法。
+
 3、6维
 
 读，写，阻塞（通道）；非阻塞（通道）；同步；异步
