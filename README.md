@@ -6,6 +6,14 @@ gopl,revisited. notes,source code on gopl.
 [Teaching Concurrency](http://lamport.azurewebsites.net/pubs/teaching-concurrency.pdf)
 [The Computer Science of Concurrency:The Early Years](http://lamport.azurewebsites.net/pubs/turing.pdf)
 
+## Talk on Go
+
+[talks](https://github.com/golang/talks)
+
+[gophercon](https://github.com/gophercon)
+
+[gopherchina](https://github.com/gopherchina/conference)
+
 ## Concurrency in Go
 
 ### Slides
