@@ -149,7 +149,7 @@ Thread 1(Goroutine 1)
 
 picture omitted
 
-> go provides concurrency primitives at language level.
+> Go provides concurrency primitives at language level.
 >
 > ➔channel(messaging)
 >
@@ -210,7 +210,7 @@ strictly, A goroutine is a lightweight user level thread managed by the Go runti
 - go 1.1: G-P-M model，work-stealing algorithm
 - go 1.2: 新增了抢占式调度（部分解决了“饿死”问题）
 - go 1.4:much of the  runtime code has been translated to Go
-- go 1.5:Go compiler and runtime entirely written in go,the runtime  now sets the default number of threads to run simultaneously, defined by GOMAXPROCS, to the number of cores available on the CPU
+- go 1.5:Go compiler and runtime(garbage collector, concurrency support, interface management, maps, slices, strings, ...) entirely written in go,the runtime  now sets the default number of threads to run simultaneously, defined by GOMAXPROCS, to the number of cores available on the CPU
 - ...
 
 ## Take Away
