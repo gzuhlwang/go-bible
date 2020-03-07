@@ -1,10 +1,12 @@
-# go-bible
+# Go-bible
 gopl,revisited. notes,source code on gopl.
 
 ## General 
 
 [Teaching Concurrency](http://lamport.azurewebsites.net/pubs/teaching-concurrency.pdf)
 [The Computer Science of Concurrency:The Early Years](http://lamport.azurewebsites.net/pubs/turing.pdf)
+
+[Go compiler toolchain](./go-compiler-toolchain.md)
 
 ## Talk on Go
 
@@ -13,6 +15,12 @@ gopl,revisited. notes,source code on gopl.
 [gophercon](https://github.com/gophercon)
 
 [gopherchina](https://github.com/gopherchina/conference)
+
+## Paper on Go in general
+
+Escape from Escape Analysis of Golang, ICSE-SEIP ’20 
+
+Analysis of the Go runtime scheduler 
 
 ## Concurrency in Go
 
