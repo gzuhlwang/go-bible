@@ -168,3 +168,8 @@ Erlang和Go语言实现了完备的协程库。Erlang语言它基于虚拟机，
   On batch system, refer to *jobs*
 
   On interactive system, refer to *processes*
+
+- 量化上下文切换的直接和间接成本。[Quantifying The Cost of Context Switch](https://www.usenix.org/legacy/events/expcs07/papers/2-li.pdf)
+
+- 度量线程切换的直接成本。[Measuring context switching and memory overheads for Linux threads](https://eli.thegreenplace.net/2018/measuring-context-switching-and-memory-overheads-for-linux-threads/)
+
